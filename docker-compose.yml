@@ -4,5 +4,5 @@ services:
     build: .
     command: python app2.py
     ports:
-      - "80:80"
+      - "8080:80"
     restart: always
