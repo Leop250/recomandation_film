@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineTrack - Recommandations</title>
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E74C3C;
+            --accent-color: #3498DB;
+            --text-color: #333;
+            --background-color: #F5F6FA;
+            --card-background: #FFFFFF;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, #2C3E50, #3498DB);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--gradient);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            margin-top: 5rem;
+            padding: 2rem;
+        }
+
+        .recommendations-header {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            background: var(--gradient);
+            color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+        }
+
+        .filter-section {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .movie-card {
+            background: var(--card-background);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .movie-poster {
+            position: relative;
+            width: 100%;
+            padding-bottom: 150%;
+            background: #f5f5f5;
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-poster img {
+            transform: scale(1.05);
+        }
+
+        .movie-score {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .recommendation-score {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .movie-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .movie-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .movie-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .genre-tag {
+            background: var(--background-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .movie-overview {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .meta-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .watch-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .watch-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .add-to-watchlist {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .add-to-watchlist:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-content">
+            <a href="{{ url_for('home') }}" class="nav-brand">CineTrack</a>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Tableau de bord</a>
+                <a href="{{ url_for('recommendations') }}" class="nav-link active">Recommandations</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="recommendations-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>Recommandations Personnalisées</h1>
+                    <div class="header-subtitle">
+                        Basées sur vos {{ watched_movies|length }} films vus
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="filter-section">
+            <div class="filter-grid">
+                <!-- Genre -->
+                <div class="filter-item">
+                    <label class="filter-label">Genre</label>
+                    <select class="filter-select" id="genreFilter">
+                        <option value="">Tous les genres</option>
+                        {% for genre in genres %}
+                        <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Année -->
+                <div class="filter-item">
+                    <label class="filter-label">Année</label>
+                    <select class="filter-select" id="yearFilter">
+                        <option value="">Toutes les années</option>
+                        {% for year in years %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Note minimale -->
+                <div class="filter-item">
+                    <label class="filter-label">Note minimale</label>
+                    <select class="filter-select" id="ratingFilter">
+                        <option value="0">Toutes les notes</option>
+                        <option value="7" {% if selected_rating == "7" %}selected{% endif %}>7+ ⭐</option>
+                        <option value="8" {% if selected_rating == "8" %}selected{% endif %}>8+ ⭐</option>
+                        <option value="9" {% if selected_rating == "9" %}selected{% endif %}>9+ ⭐</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="recommendations-grid">
+            {% for rec in recommendations %}
+            <article class="movie-card"
+                     data-genres="{{ rec.genres }}"
+                     data-year="{{ rec.release_date[:4] }}"
+                     data-rating="{{ rec.score }}">
+                <div class="movie-poster">
+                    <img src="{{ rec.poster }}" alt="Affiche de {{ rec.title }}">
+                    <div class="movie-score">{{ "%.1f"|format(rec.score) }} ⭐</div>
+                    <div class="recommendation-score">{{ "%.0f"|format(rec.similarity * 100) }}% compatible</div>
+                    <button class="add-to-watchlist" title="Ajouter à ma liste">
+                        ➕
+                    </button>
+                </div>
+                <div class="movie-content">
+                    <h2 class="movie-title">{{ rec.title }}</h2>
+                    <div class="movie-genres">
+                        {% for genre in rec.genres.split(',') %}
+                        <span class="genre-tag">{{ genre.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    <p class="movie-overview">{{ rec.overview }}</p>
+                    <div class="movie-meta">
+                        <div class="meta-info">
+                            {{ rec.director }} • {{ rec.runtime }} min
+                        </div>
+                        <a href="#" class="watch-btn">Voir plus</a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+    </main>
+
+    <script>
+        // Filtrage des films
+        const filters = {
+            genre: '',
+            year: '',
+            rating: 0
+        };
+
+        function updateFilters() {
+            filters.genre = document.getElementById('genreFilter').value;
+            filters.year = document.getElementById('yearFilter').value;
+            filters.rating = parseFloat(document.getElementById('ratingFilter').value);
+
+            const movies = document.querySelectorAll('.movie-card');
+
+            movies.forEach(movie => {
+                const genres = movie.dataset.genres;
+                const year = movie.dataset.year;
+                const rating = parseFloat(movie.dataset.rating);
+
+                const genreMatch = !filters.genre || genres.includes(filters.genre);
+                const yearMatch = !filters.year || year === filters.year;
+                const ratingMatch = rating >= filters.rating;
+
+                movie.style.display = genreMatch && yearMatch && ratingMatch ? 'flex' : 'none';
+            });
+        }
+
+        // Écouteurs d'événements pour les filtres
+        document.getElementById('genreFilter').addEventListener('change', updateFilters);
+        document.getElementById('yearFilter').addEventListener('change', updateFilters);
+        document.getElementById('ratingFilter').addEventListener('change', updateFilters);
+
+        // Navigation active
+        function setActiveNavLink() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname;
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Appeler la fonction au chargement
+        setActiveNavLink();
+    </script>
+</body>
+</html>

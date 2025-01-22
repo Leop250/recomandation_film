@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .  # Utilise le Dockerfile du répertoire courant
+    ports:
+      - "5000:5000"  # Mappe le port 5000 du conteneur sur le port 5000 de l'hôte
+    volumes:
+      - .:/app  # Monte le répertoire courant dans /app du conteneur
+      - ./popular_movies_cleaned.csv:/app/popular_movies_cleaned.csv  # Monte spécifiquement le fichier CSV
+    environment:
+      - FLASK_APP=app2.py
+      - FLASK_ENV=development  # Active le mode développement de Flask
+    restart: unless-stopped  # Redémarre le conteneur sauf si arrêté manuellement

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineTrack - Tableau de bord</title>
+    <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #E74C3C;
+            --accent-color: #3498DB;
+            --text-color: #333;
+            --background-color: #F5F6FA;
+            --card-background: #FFFFFF;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --gradient: linear-gradient(135deg, #2C3E50, #3498DB);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--gradient);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            margin-top: 5rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dashboard-header {
+            background: var(--gradient);
+            color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .movie-card {
+            background: var(--card-background);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .movie-poster {
+            position: relative;
+            width: 100%;
+            padding-bottom: 150%;
+        }
+
+        .movie-poster img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-rating {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .add-movie-section {
+            background: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 5rem;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .movie-list {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .movie-item {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .movie-item:hover {
+            background-color: #f5f5f5;
+            transform: translateX(5px);
+        }
+
+        .movie-item img {
+            width: 50px;
+            height: 75px;
+            object-fit: cover;
+            margin-right: 1rem;
+            border-radius: 4px;
+        }
+
+        .movie-item-info {
+            flex-grow: 1;
+        }
+
+        .rating-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.3s ease;
+        }
+
+        .star:hover, .star.active {
+            color: #FFD700;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.confirm {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #ddd;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-content">
+            <a href="{{ url_for('home') }}" class="nav-brand">CineTrack</a>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link active">Tableau de bord</a>
+                <a href="{{ url_for('recommendations') }}" class="nav-link">Recommandations</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Mon Tableau de Bord</h1>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ watched_movies|length }}</div>
+                        <div class="stat-label">Films vus</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ (watched_movies|sum(attribute='rating') / watched_movies|length)|round(1) if watched_movies else 0 }}</div>
+                        <div class="stat-label">Note moyenne</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-grid">
+            <section class="watched-movies">
+                <h2 class="section-title">Films vus</h2>
+                <div class="movies-grid">
+                    {% for movie in watched_movies %}
+                    {% set movie_data = movies_df[movies_df['id'] == movie.id].iloc[0] %}
+                    <div class="movie-card">
+                        <div class="movie-poster">
+                            <img src="{{ movie_data.poster_path }}" alt="{{ movie_data.title }}">
+                            <div class="movie-rating">{{ movie.rating }}/5</div>
+                        </div>
+                        <div class="movie-info">
+                            <div class="movie-title">{{ movie_data.title }}</div>
+                            <div class="movie-meta">
+                                {{ movie_data.release_date[:4] }} • {{ movie_data.runtime }} min
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="add-movie-section">
+                <h2 class="section-title">Ajouter un film</h2>
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Rechercher un film..." id="movieSearch">
+                </div>
+                <div class="movie-list">
+                    {% for _, movie in movies_df.iterrows() %}
+                    <div class="movie-item" data-movie-id="{{ movie.id }}" data-movie-title="{{ movie.title }}">
+                        <img src="{{ movie.poster_path }}" alt="{{ movie.title }}">
+                        <div class="movie-item-info">
+                            <div class="movie-title">{{ movie.title }}</div>
+                            <div class="movie-meta">
+                                {{ movie.release_date[:4] }} • {{ movie.runtime }} min
+                                <br>
+                                {{ movie.genres }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal de notation -->
+    <div class="rating-modal" id="ratingModal">
+        <div class="modal-content">
+            <h3>Noter le film</h3>
+            <h4 id="selectedMovieTitle"></h4>
+            <div class="rating-stars">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="cancelRating">Annuler</button>
+                <button class="modal-btn confirm" id="confirmRating">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="addMovieForm" style="display: none;">
+        <input type="hidden" name="movie_id" id="selectedMovieId">
+        <input type="hidden" name="rating" id="selectedRating">
+    </form>
+
+    <script>
+        // Recherche de films
+const searchInput = document.getElementById('movieSearch');
+const movieItems = document.querySelectorAll('.movie-item');
+const ratingModal = document.getElementById('ratingModal');
+const stars = document.querySelectorAll('.star');
+let currentRating = 0;
+let currentMovieId = null;
+
+// Fonction de recherche en temps réel
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    movieItems.forEach(item => {
+        const title = item.querySelector('.movie-title').textContent.toLowerCase();
+        const genres = item.querySelector('.movie-meta').textContent.toLowerCase();
+        item.style.display = (title.includes(searchTerm) || genres.includes(searchTerm)) ? 'flex' : 'none';
+    });
+});
+
+// Gestion du clic sur un film
+movieItems.forEach(item => {
+    item.addEventListener('click', () => {
+        currentMovieId = item.dataset.movieId;
+        document.getElementById('selectedMovieTitle').textContent = item.dataset.movieTitle;
+        ratingModal.style.display = 'flex';
+        resetStars();
+    });
+});
+
+// Gestion des étoiles
+stars.forEach(star => {
+    // Survol des étoiles
+    star.addEventListener('mouseover', () => {
+        const rating = parseInt(star.dataset.rating);
+        highlightStars(rating);
+    });
+
+    // Sortie du survol
+    star.addEventListener('mouseout', () => {
+        highlightStars(currentRating);
+    });
+
+    // Clic sur une étoile
+    star.addEventListener('click', () => {
+        currentRating = parseInt(star.dataset.rating);
+        highlightStars(currentRating);
+    });
+});
+
+// Gestion des boutons du modal
+document.getElementById('cancelRating').addEventListener('click', () => {
+    closeModal();
+});
+
+document.getElementById('confirmRating').addEventListener('click', () => {
+    if (currentRating > 0 && currentMovieId) {
+        const form = document.getElementById('addMovieForm');
+        document.getElementById('selectedMovieId').value = currentMovieId;
+        document.getElementById('selectedRating').value = currentRating;
+        form.submit();
+    }
+});
+
+// Fermeture du modal en cliquant en dehors
+ratingModal.addEventListener('click', (e) => {
+    if (e.target === ratingModal) {
+        closeModal();
+    }
+});
+
+// Fermeture avec la touche Echap
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Fonctions utilitaires
+function highlightStars(rating) {
+    stars.forEach(star => {
+        const starRating = parseInt(star.dataset.rating);
+        star.classList.toggle('active', starRating <= rating);
+    });
+}
+
+function resetStars() {
+    currentRating = 0;
+    highlightStars(0);
+}
+
+function closeModal() {
+    ratingModal.style.display = 'none';
+    resetStars();
+    currentMovieId = null;
+}
+
+// Navigation active
+function setActiveNavLink() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+// Animation douce pour la navigation
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    setActiveNavLink();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}CineTrack - Accueil{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--gradient);
+        margin: -2rem -2rem 2rem -2rem;
+        color: white;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Bienvenue sur CineTrack</h1>
+    <p>Suivez vos films, obtenez des recommandations personnalisées</p>
+    {% if 'user' not in session %}
+        <a href="{{ url_for('register') }}" class="btn btn-secondary">Commencer maintenant</a>
+    {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Voir mon tableau de bord</a>
+    {% endif %}
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>Suivez vos films</h3>
+        <p>Gardez une trace de tous les films que vous regardez et notez-les</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Notez-les</h3>
+        <p>Donnez votre avis sur chaque film et construisez votre collection</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Découvrez</h3>
+        <p>Obtenez des recommandations basées sur vos goûts</p>
+    </div>
+</div>
+{% endblock %}
