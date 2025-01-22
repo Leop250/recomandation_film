@@ -23,7 +23,7 @@ movies_df['combined_text'] = (
 texts = movies_df['combined_text'].tolist()
 
 # Limiter le nombre de termes pour réduire la taille de la matrice
-vect = TfidfVectorizer(max_features=10000)  # Limite à 10 000 termes
+vect = TfidfVectorizer(max_features=1000)  # Limite à 10 000 termes
 tfidf_mat = vect.fit_transform(texts)
 
 # Appliquer TruncatedSVD pour réduire la dimensionnalité
