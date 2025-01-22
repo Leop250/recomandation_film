@@ -21,9 +21,12 @@ movies_df['combined_text'] = (
 
 # Prétraitement des données pour le système de recommandation
 texts = movies_df['combined_text'].tolist()
-vect = TfidfVectorizer()
-tfidf_mat = vect.fit_transform(texts).toarray()
 
+# Limiter le nombre de termes pour réduire la taille de la matrice
+vect = TfidfVectorizer(max_features=10000)  # Limite à 10 000 termes
+tfidf_mat = vect.fit_transform(texts)
+
+# Appliquer TruncatedSVD pour réduire la dimensionnalité
 svd = TruncatedSVD(n_components=50, random_state=42)
 data_encoded = svd.fit_transform(tfidf_mat)
 
@@ -33,7 +36,6 @@ user_history = {}
 
 # Fonction de recommandation
 def recommend_movies(user_id, n_recommendations=5):
-    # Obtenir les films vus par l'utilisateur
     user_movies = user_history.get(user_id, {})
     if not user_movies:
         print("Aucun historique trouvé pour cet utilisateur.")
@@ -126,7 +128,6 @@ def dashboard():
         user_history[username][movie_id] = rating
         return redirect(url_for('dashboard'))
 
-    # Préparer les données des films vus avec plus d'informations
     watched_movies = [
         {
             "id": movie_id,
@@ -148,17 +149,12 @@ def recommendations():
     # Récupérer les films recommandés
     recs = recommend_movies(username, n_recommendations=12)
 
-    # Récupérer les genres uniques à partir des films recommandés
     unique_genres = sorted(set(genre.strip() for rec in recs for genre in rec['genres'].split(',')))
-
-    # Récupérer les années uniques à partir des films recommandés
     unique_years = sorted(set(rec['release_date'][:4] for rec in recs))
 
-    # Appliquer les filtres si des valeurs sont fournies
     selected_genre = request.args.get('genre', "")
     selected_year = request.args.get('year', "")
 
-    # Appliquer les filtres sur les films recommandés
     filtered_recs = recs
     if selected_genre:
         filtered_recs = [rec for rec in filtered_recs if selected_genre.lower() in rec['genres'].lower()]
@@ -179,6 +175,5 @@ def logout():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-
     app.run(host='0.0.0.0', port=8080)
     app.run(debug=True)
